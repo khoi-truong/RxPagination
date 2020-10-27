@@ -10,6 +10,12 @@ PODS:
   - RxOptional (4.1.0):
     - RxCocoa (~> 5)
     - RxSwift (~> 5)
+  - RxPagination (0.0.1):
+    - Action (~> 4.1.0)
+    - RxCocoa (~> 5.1.1)
+    - RxOptional (~> 4.1.0)
+    - RxSwift (~> 5.1.1)
+    - RxSwiftExt (~> 5.2.0)
   - RxRelay (5.1.1):
     - RxSwift (~> 5)
   - RxSwift (5.1.1)
@@ -30,6 +36,7 @@ DEPENDENCIES:
   - Quick
   - RxCocoa
   - RxOptional
+  - RxPagination
   - RxSwift
   - RxSwiftExt
   - RxTest
@@ -41,6 +48,7 @@ SPEC REPOS:
     - Quick
     - RxCocoa
     - RxOptional
+    - RxPagination
     - RxRelay
     - RxSwift
     - RxSwiftExt
@@ -52,11 +60,12 @@ SPEC CHECKSUMS:
   Quick: 6d9559f40647bc4d510103842ef2fdd882d753e2
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
   RxOptional: b1fcd60856807a564c0215c2184b8d33e7826dc2
+  RxPagination: f4e6888fb6f4b3be143952d3919dc6151a9bc5d2
   RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
   RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
   RxSwiftExt: 4ca80336f43c28f11a2825cdd2fc61dd6c044697
   RxTest: 711632d5644dffbeb62c936a521b5b008a1e1faa
 
-PODFILE CHECKSUM: d97b37e38885a1bd990b813540fd3e5d8784f94f
+PODFILE CHECKSUM: 340cc53b9ca3e4b2f6c9fca1fa3836f2c0f67345
 
 COCOAPODS: 1.9.3
