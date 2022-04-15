@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name           = "RxPagination"
-  spec.version        = "0.0.1"
+  spec.version        = "0.0.2"
   spec.summary        = "Handle paginated APIs easily, based on RxSwift Action"
   spec.description    = <<-DESC
     Handle paginated APIs easily, based on RxSwift Action. Including 3 pagination styles.
@@ -18,10 +18,10 @@ Pod::Spec.new do |spec|
   spec.source_files   = "Sources/**/*.{swift}"
 
   spec.frameworks  = "Foundation"
-  spec.dependency "RxSwift", "~> 5.1.1"
-  spec.dependency "RxCocoa", "~> 5.1.1"
-  spec.dependency "RxSwiftExt", "~> 5.2.0"
-  spec.dependency "RxOptional", "~> 4.1.0"
-  spec.dependency "Action", "~> 4.1.0"
+  spec.dependency "RxSwift", "~> 6.0"
+  spec.dependency "RxCocoa", "~> 6.0"
+  spec.dependency "RxSwiftExt", "~> 6.0"
+  spec.dependency "RxOptional", "~> 5.0"
+  spec.dependency "Action", "~> 5.0"
 
 end
