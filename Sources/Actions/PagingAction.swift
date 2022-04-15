@@ -39,7 +39,7 @@ public struct RequestPage: Equatable {
 
 public final class PagingAction<Input, Response: PagingResponse> {
 
-    public typealias Request = (Input, RequestPage?) -> Observable<Response>
+    public typealias Request = (Input, RequestPage) -> Observable<Response>
 
     // MARK: - Inputs
 
@@ -57,7 +57,7 @@ public final class PagingAction<Input, Response: PagingResponse> {
 
     // MARK: - Private
 
-    private typealias ActionInput = (Request, Input, RequestPage?)
+    private typealias ActionInput = (Request, Input, RequestPage)
     private let action: Action<ActionInput, Response>
     private let actionErrors = PublishRelay<ActionError>()
     private let responses: Observable<(response: Response, type: ActionType)>
@@ -68,20 +68,37 @@ public final class PagingAction<Input, Response: PagingResponse> {
 
     // MARK: - Init
 
-    public convenience init(itemsPerPage: Int? = nil, request: @escaping Request) {
-        self.init(itemsPerPage: itemsPerPage, removeDuplicates: nil, ofType: String.self, request: request)
+    public convenience init(
+        itemsPerPage: Int,
+        request: @escaping Request
+    ) {
+        self.init(
+            itemsPerPage: itemsPerPage,
+            removeDuplicates: nil,
+            ofType: String.self,
+            request: request
+        )
     }
 
-    public convenience init<S: Hashable>(itemsPerPage: Int? = nil,
-                                         removeDuplicates keyForValue: @escaping ((Response.Item) -> S),
-                                         request: @escaping Request) {
-        self.init(itemsPerPage: itemsPerPage, removeDuplicates: keyForValue, ofType: S.self, request: request)
+    public convenience init<S: Hashable>(
+        itemsPerPage: Int,
+        removeDuplicates keyForValue: @escaping ((Response.Item) -> S),
+        request: @escaping Request
+    ) {
+        self.init(
+            itemsPerPage: itemsPerPage,
+            removeDuplicates: keyForValue,
+            ofType: S.self,
+            request: request
+        )
     }
 
-    private init<S: Hashable>(itemsPerPage: Int? = nil,
-                              removeDuplicates keyForValue: ((Response.Item) -> S)?,
-                              ofType _: S.Type,
-                              request: @escaping Request) {
+    private init<S: Hashable>(
+        itemsPerPage: Int,
+        removeDuplicates keyForValue: ((Response.Item) -> S)?,
+        ofType _: S.Type,
+        request: @escaping Request
+    ) {
 
         self.action = Action<ActionInput, Response> { request, input, next in request(input, next) }
 
@@ -115,8 +132,15 @@ public final class PagingAction<Input, Response: PagingResponse> {
     private func configPage() {
 
         Observable
-            .merge(action.elements.map { $0.mayHaveNext ? RequestPage(page: $0.page + 1, itemsPerPage: $0.itemsPerPage) : nil },
-                   reload.mapTo(nil))
+            .merge(
+                action.elements
+                    .map {
+                        $0.mayHaveNext
+                        ? RequestPage(page: $0.page + 1, itemsPerPage: $0.itemsPerPage)
+                        : nil
+                    },
+                reload.mapTo(nil)
+            )
             .bind(to: nextPage)
             .disposed(by: disposeBag)
 
@@ -143,7 +167,7 @@ public final class PagingAction<Input, Response: PagingResponse> {
             .disposed(by: disposeBag)
     }
 
-    private func configActionInputs(itemsPerPage: Int?, request: @escaping Request) {
+    private func configActionInputs(itemsPerPage: Int, request: @escaping Request) {
 
         next
             .withLatestFrom(nextPage) { input, next in next.flatMap { (request, input, $0) } }
@@ -152,7 +176,7 @@ public final class PagingAction<Input, Response: PagingResponse> {
             .disposed(by: disposeBag)
 
         reload
-            .map { input in (request, input, itemsPerPage.flatMap { RequestPage(page: 0, itemsPerPage: $0) }) }
+            .map { input in (request, input, RequestPage(page: 0, itemsPerPage: itemsPerPage)) }
             .bind(to: action.inputs)
             .disposed(by: disposeBag)
     }

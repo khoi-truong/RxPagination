@@ -39,7 +39,7 @@ public struct RequestOffset: Equatable {
 
 public final class OffsettingAction<Input, Response: OffsettingResponse> {
 
-    public typealias Request = (Input, RequestOffset?) -> Observable<Response>
+    public typealias Request = (Input, RequestOffset) -> Observable<Response>
 
     // MARK: - Inputs
 
@@ -57,7 +57,7 @@ public final class OffsettingAction<Input, Response: OffsettingResponse> {
 
     // MARK: - Private
 
-    private typealias ActionInput = (Request, Input, RequestOffset?)
+    private typealias ActionInput = (Request, Input, RequestOffset)
     private let action: Action<ActionInput, Response>
     private let actionErrors = PublishRelay<ActionError>()
     private let responses: Observable<(response: Response, type: ActionType)>
@@ -68,20 +68,37 @@ public final class OffsettingAction<Input, Response: OffsettingResponse> {
 
     // MARK: - Init
 
-    public convenience init(limit: Int? = nil, request: @escaping Request) {
-        self.init(limit: limit, removeDuplicates: nil, ofType: String.self, request: request)
+    public convenience init(
+        limit: Int,
+        request: @escaping Request
+    ) {
+        self.init(
+            limit: limit,
+            removeDuplicates: nil,
+            ofType: String.self,
+            request: request
+        )
     }
 
-    public convenience init<S: Hashable>(limit: Int? = nil,
-                                         removeDuplicates keyForValue: @escaping ((Response.Item) -> S),
-                                         request: @escaping Request) {
-        self.init(limit: limit, removeDuplicates: keyForValue, ofType: S.self, request: request)
+    public convenience init<S: Hashable>(
+        limit: Int,
+        removeDuplicates keyForValue: @escaping ((Response.Item) -> S),
+        request: @escaping Request
+    ) {
+        self.init(
+            limit: limit,
+            removeDuplicates: keyForValue,
+            ofType: S.self,
+            request: request
+        )
     }
 
-    private init<S: Hashable>(limit: Int? = nil,
-                              removeDuplicates keyForValue: ((Response.Item) -> S)?,
-                              ofType _: S.Type,
-                              request: @escaping Request) {
+    private init<S: Hashable>(
+        limit: Int,
+        removeDuplicates keyForValue: ((Response.Item) -> S)?,
+        ofType _: S.Type,
+        request: @escaping Request
+    ) {
 
         self.action = Action<ActionInput, Response> { request, input, next in request(input, next) }
 
@@ -96,8 +113,12 @@ public final class OffsettingAction<Input, Response: OffsettingResponse> {
                 case .reload: return [element.response]
                 }
             }
-            .map { responses in responses.sorted(by: { $0.offset < $1.offset }).flatMap { $0.items } }
-            .map { items in keyForValue.flatMap({ items.removeDuplicates(by: $0) }).or(items) }
+            .map { responses in
+                responses.sorted(by: { $0.offset < $1.offset }).flatMap { $0.items }
+            }
+            .map { items in
+                keyForValue.flatMap({ items.removeDuplicates(by: $0) }).or(items)
+            }
 
         configPage()
         configActionType()
@@ -115,13 +136,23 @@ public final class OffsettingAction<Input, Response: OffsettingResponse> {
     private func configPage() {
 
         Observable
-            .merge(action.elements.map { $0.mayHaveNext ? RequestOffset(offset: $0.offset + $0.limit, limit: $0.limit) : nil },
-                   reload.mapTo(nil))
+            .merge(
+                action.elements
+                    .map {
+                        $0.mayHaveNext
+                        ? RequestOffset(offset: $0.offset + $0.limit, limit: $0.limit)
+                        : nil
+                    },
+                reload.mapTo(nil)
+            )
             .bind(to: nextOffset)
             .disposed(by: disposeBag)
 
         Observable
-            .merge(action.elements.map { $0.mayHaveNext }, reload.mapTo(true))
+            .merge(
+                action.elements.map { $0.mayHaveNext },
+                reload.mapTo(true)
+            )
             .bind(to: hasNextRelay)
             .disposed(by: disposeBag)
     }
@@ -143,7 +174,7 @@ public final class OffsettingAction<Input, Response: OffsettingResponse> {
             .disposed(by: disposeBag)
     }
 
-    private func configActionInputs(limit: Int?, request: @escaping Request) {
+    private func configActionInputs(limit: Int, request: @escaping Request) {
 
         next
             .withLatestFrom(nextOffset) { input, next in next.flatMap { (request, input, $0) } }
@@ -152,7 +183,7 @@ public final class OffsettingAction<Input, Response: OffsettingResponse> {
             .disposed(by: disposeBag)
 
         reload
-            .map { input in (request, input, limit.flatMap { RequestOffset(offset: 0, limit: $0) }) }
+            .map { input in (request, input, RequestOffset(offset: 0, limit: limit)) }
             .bind(to: action.inputs)
             .disposed(by: disposeBag)
     }
