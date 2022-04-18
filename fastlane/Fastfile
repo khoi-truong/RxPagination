@@ -23,9 +23,7 @@ platform :ios do
 
   desc "Run tests (unit tests only)"
   lane :tests do
-    cocoapods(
-      clean_install: true
-    )
+    cocoapods()
     run_tests(
       workspace: XCODE_WORKSPACE,
       scheme: XCODE_SCHEME,

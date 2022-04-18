@@ -1,3 +1,5 @@
+![Tests](https://github.com/khoi-truong/RxPagination/actions/workflows/tests.yml/badge.svg)
+
 RxPagination
 ======
 
