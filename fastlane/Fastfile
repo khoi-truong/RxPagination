@@ -1,0 +1,35 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+XCODE_WORKSPACE = "RxPagination.xcworkspace"
+XCODE_PROJECT = "RxPagination.xcodeproj"
+XCODE_SCHEME = "RxPagination"
+
+default_platform(:ios)
+
+platform :ios do
+
+  desc "Run tests (unit tests only)"
+  lane :tests do
+    cocoapods(
+      clean_install: true
+    )
+    run_tests(
+      workspace: XCODE_WORKSPACE,
+      scheme: XCODE_SCHEME,
+      skip_package_dependencies_resolution: true
+    )
+  end
+end
