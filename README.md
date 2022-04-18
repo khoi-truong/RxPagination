@@ -1,4 +1,4 @@
-![Tests](https://github.com/khoi-truong/RxPagination/actions/workflows/tests.yml/badge.svg)
+[![Tests](https://github.com/khoi-truong/RxPagination/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/khoi-truong/RxPagination/actions/workflows/tests.yml)
 
 RxPagination
 ======
